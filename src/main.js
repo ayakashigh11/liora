@@ -179,6 +179,7 @@ async function LIORA() {
         global.logger.info("Running final serialization and setup...");
         serialize();
         global.logger.info("Serialization completed");
+        global.logger.info("Bot is fully initialized and running! Waiting for connection...");
     } catch (e) {
         global.logger.error({ error: e.message, stack: e.stack }, "Serialization failed");
     }
