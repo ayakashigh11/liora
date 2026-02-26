@@ -139,23 +139,31 @@ async function LIORA() {
 
     global.sock = ayakashi(opt);
     global.sock.isInit = false;
-
-    if (!state.creds.registered && pairNum) {
-        await pair(global.sock);
-    }
+    global.logger.info("Socket initialized");
 
     const evt = new EventManager();
-
     const hdl = await import("./handler.js");
     evt.setHandler(hdl);
 
     global.reloadHandler = await evt.createReloadHandler(opt, saveCreds);
 
+    global.logger.info("Registering event handlers...");
+    await global.reloadHandler();
+    global.logger.info("Event handlers registered");
+
+    if (!state.creds.registered && pairNum) {
+        global.logger.info("Starting pairing process...");
+        await pair(global.sock);
+        global.logger.info("Pairing process completed (or timed out)");
+    }
+
     const file = Bun.fileURLToPath(import.meta.url);
     const src = dirname(file);
     const plugDir = join(src, "./plugins");
 
+    global.logger.info("Loading plugins...");
     await loadPlugins(plugDir);
+    global.logger.info("Plugins loading phase completed");
 
     global.pluginFolder = plugDir;
 
@@ -167,8 +175,13 @@ async function LIORA() {
         return reloadSinglePlugin(fp, plugDir);
     };
 
-    await global.reloadHandler();
-    serialize();
+    try {
+        global.logger.info("Running final serialization and setup...");
+        serialize();
+        global.logger.info("Serialization completed");
+    } catch (e) {
+        global.logger.error({ error: e.message, stack: e.stack }, "Serialization failed");
+    }
 
     // Reminder background loop
     setInterval(async () => {
