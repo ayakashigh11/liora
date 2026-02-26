@@ -113,8 +113,8 @@ export class mods {
                 forwardingScore: 999,
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
-                    newsletterJid: "120363233512345678@newsletter",
-                    newsletterName: "Liora",
+                    newsletterJid: "120363404234280078@newsletter",
+                    newsletterName: "Liora+ | windy.id",
                     serverMessageId: 1
                 }
             }
