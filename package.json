@@ -26,6 +26,7 @@
     },
     "imports": {
         "#auth": "./src/lib/core/auth/auth.js",
+        "#auth/*": "./src/lib/core/auth/*",
         "#core/*": "./src/lib/core/*",
         "#lib/tracker.js": "./src/lib/tracker.js",
         "#lib/reminder.js": "./src/lib/reminder.js",
