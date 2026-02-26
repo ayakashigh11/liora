@@ -320,8 +320,11 @@ export async function handleDisconnect({ lastDisconnect, isNewLogin, connection 
     }
 
     if (lastDisconnect?.error) {
+        const errorMessage = lastDisconnect.error.message || lastDisconnect.error.toString();
+        global.logger?.error({ reason, statusCode: reason, error: errorMessage }, "Connection disconnected");
+
         if (reason === DisconnectReason.loggedOut || reason === DisconnectReason.badSession) {
-            global.logger?.error("Session invalid - please re-authenticate");
+            global.logger?.error("Session invalid - please re-authenticate. TIP: Try deleting src/database/auth.db if this persists.");
         } else {
             tryRecover();
         }
