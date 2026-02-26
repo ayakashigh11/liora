@@ -53,13 +53,14 @@ let handler = async (m, { sock, text }) => {
 
         // Send request to OpenRouter
         const stream = await openrouter.chat.send({
-            model: "openai/gpt-oss-120b:free",
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: prompt }
-            ],
-            stream: true,
-            chatGenerationParams: {}
+            chatGenerationParams: {
+                model: "openai/gpt-oss-120b:free",
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: prompt }
+                ],
+            },
+            stream: true
         });
 
         let fullResponse = "";

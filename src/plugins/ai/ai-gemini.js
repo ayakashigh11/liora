@@ -8,9 +8,9 @@ let handler = async (m, { sock, text }) => {
     const { apiKey, systemPrompt } = global.config.gemini;
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-        model: "gemini-1.5-flash",
+        model: "gemini-1.5-flash-001",
         systemInstruction: systemPrompt
-    }, { apiVersion: 'v1' });
+    }); // Default is v1beta which supports systemInstruction
 
     try {
         await global.loading(m, sock);
