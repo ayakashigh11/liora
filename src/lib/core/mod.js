@@ -109,6 +109,15 @@ export class mods {
             upload: this.sock.waUploadToServer,
             quoted: options?.quoted || null,
             ephemeralExpiration: options?.quoted?.expiration ?? 0,
+            contextInfo: {
+                forwardingScore: 999,
+                isForwarded: true,
+                forwardedNewsletterMessageInfo: {
+                    newsletterJid: "120363233512345678@newsletter",
+                    newsletterName: "Liora Channel",
+                    serverMessageId: 1
+                }
+            }
         };
 
         const album = generateWAMessageFromContent(jid, msgContent, genOpt);
@@ -329,6 +338,15 @@ export class mods {
             {
                 userJid: this.sock.user.id,
                 quoted: options?.quoted || null,
+                contextInfo: {
+                    forwardingScore: 999,
+                    isForwarded: true,
+                    forwardedNewsletterMessageInfo: {
+                        newsletterJid: "120363233512345678@newsletter",
+                        newsletterName: "Liora Channel",
+                        serverMessageId: 1
+                    }
+                }
             }
         );
 
@@ -734,6 +752,15 @@ export class mods {
             {
                 userJid: this.sock.user.id,
                 quoted: options?.quoted || null,
+                contextInfo: {
+                    forwardingScore: 999,
+                    isForwarded: true,
+                    forwardedNewsletterMessageInfo: {
+                        newsletterJid: "120363233512345678@newsletter",
+                        newsletterName: "Liora Channel",
+                        serverMessageId: 1
+                    }
+                }
             }
         );
 

@@ -32,8 +32,9 @@
  */
 import os from "os";
 
-const CATS = ["downloader", "group", "info", "maker", "owner", "tools"];
+const CATS = ["ai", "downloader", "group", "info", "maker", "owner", "tools"];
 const META = {
+    ai: "AI",
     downloader: "Downloader",
     group: "Group",
     info: "Info",

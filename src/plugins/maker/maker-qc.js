@@ -42,7 +42,7 @@ let handler = async (m, { sock, args, usedPrefix, command }) => {
 
     try {
         const targetJid = m.quoted ? m.quoted.sender : m.sender;
-        const name = (await sock.getName(targetJid)) || "User";
+        const name = (m.quoted ? m.quoted.pushName : m.pushName) || (await sock.getName(targetJid)) || "User";
         let avatar;
 
         try {

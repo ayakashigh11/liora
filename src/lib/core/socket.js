@@ -73,6 +73,30 @@ export function ayakashi(connectionOptions) {
 
     sock.decodeJid = decodeJid;
 
+    const _sendMessage = sock.sendMessage.bind(sock);
+    sock.sendMessage = async (jid, content, options = {}) => {
+        const fakeForward = {
+            contextInfo: {
+                forwardingScore: 999,
+                isForwarded: true,
+                forwardedNewsletterMessageInfo: {
+                    newsletterJid: "120363233512345678@newsletter",
+                    newsletterName: "Liora Channel",
+                    serverMessageId: 1
+                }
+            }
+        };
+
+        if (content && typeof content === "object" && !content.poll) {
+            content.contextInfo = {
+                ...(content.contextInfo || {}),
+                ...fakeForward.contextInfo
+            };
+        }
+
+        return _sendMessage(jid, content, options);
+    };
+
     const sender = new mods(sock);
     sock.client = sender.client.bind(sender);
 

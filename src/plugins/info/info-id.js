@@ -1,0 +1,58 @@
+/**
+ * @file ID retrieval command handler
+ * @module plugins/info/id
+ * @license Apache-2.0
+ * @author ayakashigh11
+ */
+
+let handler = async (m, { sock, args, usedPrefix, command }) => {
+    const isChannel = command === "idch";
+    const link = args[0];
+
+    try {
+        if (global.loading) await global.loading(m, sock);
+
+        if (isChannel) {
+            let id, name;
+            if (link && link.includes("whatsapp.com/channel/")) {
+                const code = link.split("/channel/")[1].split("?")[0];
+                const res = await sock.newsletterMetadata("invite", code);
+                id = res.id;
+                name = res.name;
+            } else if (m.chat.endsWith("@newsletter")) {
+                id = m.chat;
+                const res = await sock.newsletterMetadata("jid", id);
+                name = res.name;
+            } else {
+                return m.reply(`Usage: ${usedPrefix + command} <channel_link>\nOr use it inside a channel.`);
+            }
+            return m.reply(`*CHANNEL INFO*\n\nName: ${name}\nID: ${id}`);
+        } else {
+            // Group ID
+            let id, subject;
+            if (link && link.includes("chat.whatsapp.com/")) {
+                const code = link.split(".com/")[1].split("?")[0];
+                const res = await sock.groupGetInviteInfo(code);
+                id = res.id;
+                subject = res.subject;
+            } else if (m.isGroup) {
+                id = m.chat;
+                const metadata = await sock.groupMetadata(id);
+                subject = metadata.subject;
+            } else {
+                return m.reply(`Usage: ${usedPrefix + command} <group_link>\nOr use it inside a group.`);
+            }
+            return m.reply(`*GROUP INFO*\n\nSubject: ${subject}\nID: ${id}`);
+        }
+    } catch (e) {
+        m.reply(`Error: ${e.message}`);
+    } finally {
+        if (global.loading) await global.loading(m, sock, true);
+    }
+};
+
+handler.help = ["idch", "idgc"];
+handler.tags = ["info"];
+handler.command = /^(idch|idgc)$/i;
+
+export default handler;
