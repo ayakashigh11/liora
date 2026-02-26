@@ -133,14 +133,14 @@ async function LIORA() {
     const opt = {
         version: v,
         logger: logger(),
-        browser: ["Ubuntu", "Chrome", "20.0.04"],
+        browser: Browsers.macOS("Safari"),
         auth: state,
     };
 
     global.sock = ayakashi(opt);
     global.sock.isInit = false;
 
-    if (!state.creds.registered && pairNum) {
+    if (!state.creds.registered && global.config.usePairingCode && pairNum) {
         await pair(global.sock);
     }
 

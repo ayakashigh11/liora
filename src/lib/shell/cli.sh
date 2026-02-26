@@ -42,8 +42,11 @@ validate_sha() {
 
 check_config() {
     [ ! -f "$WORK_DIR/.env" ] && { error "Configuration file not found"; return 1; }
-    local num=$(grep "^PAIRING_NUMBER=" "$WORK_DIR/.env" | cut -d= -f2 | tr -d ' ')
-    [ -z "$num" ] && { error "PAIRING_NUMBER not configured"; return 1; }
+    local type=$(grep "^USE_PAIRING_CODE=" "$WORK_DIR/.env" | cut -d= -f2 | tr -d ' ' || echo "true")
+    if [ "$type" = "true" ]; then
+        local num=$(grep "^PAIRING_NUMBER=" "$WORK_DIR/.env" | cut -d= -f2 | tr -d ' ')
+        [ -z "$num" ] || [[ ! "$num" =~ ^[0-9]+$ ]] && { error "PAIRING_NUMBER not configured or invalid"; return 1; }
+    fi
     return 0
 }
 

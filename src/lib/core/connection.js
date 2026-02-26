@@ -187,7 +187,17 @@ export class EventManager {
     }
 }
 
-export async function handleDisconnect({ lastDisconnect, isNewLogin, connection }) {
+export async function handleDisconnect({ lastDisconnect, isNewLogin, connection, qr }) {
+    if (qr && !global.config.usePairingCode) {
+        try {
+            const qrcode = await import("qrcode-terminal");
+            qrcode.generate(qr, { small: true });
+        } catch {
+            console.log("QR Code:", qr);
+            console.log("TIP: Install 'qrcode-terminal' (npm install qrcode-terminal) to see the QR code visually.");
+        }
+    }
+
     global.__reconnect ??= {
         attempts: 0,
         lastAt: 0,

@@ -381,6 +381,7 @@ const initializeConfig = () => {
      */
     const config = {
         owner: owners,
+        usePairingCode: parseBoolean(Bun.env.USE_PAIRING_CODE, !!(Bun.env.PAIRING_NUMBER)),
         pairingNumber: (Bun.env.PAIRING_NUMBER || "").trim(),
         pairingCode: (Bun.env.PAIRING_CODE || "").trim().toUpperCase() || generatePairingCode(),
         watermark: Bun.env.WATERMARK || "Liora",

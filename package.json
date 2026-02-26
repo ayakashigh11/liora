@@ -22,7 +22,8 @@
         "@openrouter/sdk": "^0.8.0",
         "puppeteer": "^24.2.1",
         "node-webpmux": "^3.2.1",
-        "p-queue": "^9.1.0"
+        "p-queue": "^9.1.0",
+        "qrcode-terminal": "^0.12.0"
     },
     "imports": {
         "#auth": "./src/lib/core/auth/auth.js",

@@ -10,6 +10,42 @@ validate_time_format() {
     echo "$format" | grep -qE '^[HMSmsDdYy:/. -]+$'
 }
 
+prompt_login_method() {
+    echo ""
+    echo -e "${BOLD}${CYAN} ✦ Login Method Selection ✦ ${RESET}"
+    echo -e "${GRAY}────────────────────────────────────────────────────────────${RESET}"
+    echo -e "${DIM}Choose how you want to link the bot to WhatsApp.${RESET}"
+    echo ""
+    echo -e "  ${BOLD}${WHITE}1)${RESET} Pairing Code ${DIM}(Phone number required)${RESET}"
+    echo -e "  ${BOLD}${WHITE}2)${RESET} QR Code      ${DIM}(Scan using WhatsApp)${RESET}"
+    echo ""
+
+    while true; do
+        echo -ne "${WHITE}Select method${RESET} ${DIM}[default: 1]${RESET}: "
+        read -r choice < /dev/tty
+        choice="${choice:-1}"
+
+        case "$choice" in
+            1)
+                export USE_PAIRING_CODE="true"
+                log "Selected login method: ${GREEN}Pairing Code${RESET}"
+                prompt_pairing
+                break
+                ;;
+            2)
+                export USE_PAIRING_CODE="false"
+                export PAIRING_NUM=""
+                export PAIRING_CODE=""
+                log "Selected login method: ${GREEN}QR Code${RESET}"
+                break
+                ;;
+            *)
+                error "Invalid choice. Please enter 1 or 2."
+                ;;
+        esac
+    done
+}
+
 prompt_pairing() {
     echo ""
     echo -e "${BOLD}${CYAN} ✦ WhatsApp Configuration ✦ ${RESET}"
@@ -271,6 +307,7 @@ create_env() {
 OWNERS=$OWNERS_ARRAY
 
 # Pairing Configuration
+USE_PAIRING_CODE=$USE_PAIRING_CODE
 PAIRING_NUMBER=$PAIRING_NUM
 PAIRING_CODE=$PAIRING_CODE
 
@@ -297,7 +334,7 @@ EOF
 }
 
 configure_bot() {
-    prompt_pairing
+    prompt_login_method
     prompt_owners
     prompt_metadata
     prompt_behavior
