@@ -81,7 +81,7 @@ export function ayakashi(connectionOptions) {
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: "120363233512345678@newsletter",
-                    newsletterName: "Liora Channel",
+                    newsletterName: "Liora",
                     serverMessageId: 1
                 }
             }
