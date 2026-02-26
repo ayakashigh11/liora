@@ -19,7 +19,7 @@
         "baileys": "github:naruyaizumi/baileys",
         "file-type": "^21.3.0",
         "@google/generative-ai": "^0.21.0",
-        "@openrouter/sdk": "^0.0.8",
+        "@openrouter/sdk": "^0.8.0",
         "puppeteer": "^24.2.1",
         "node-webpmux": "^3.2.1",
         "p-queue": "^9.1.0"
