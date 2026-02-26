@@ -51,27 +51,31 @@ let handler = async (m, { sock, text }) => {
             return m.reply("No usable prompt found.");
         }
 
-        // Send request to OpenRouter
-        const stream = await openrouter.chat.send({
-            chatGenerationParams: {
-                model: "openai/gpt-oss-120b:free",
+        // Send request to OpenRouter using direct fetch for reliability
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://github.com/ayakashigh11/liora", // Optional but helps
+                "X-Title": "Liora Bot"
+            },
+            body: JSON.stringify({
+                model: "openai/gpt-3.5-turbo", // Switching to 3.5 turbo for better compatibility check
                 messages: [
                     { role: "system", content: systemPrompt },
                     { role: "user", content: prompt }
-                ],
-            },
-            stream: true
+                ]
+            })
         });
 
-        let fullResponse = "";
-
-        // Accumulate stream
-        for await (const chunk of stream) {
-            const content = chunk.choices[0]?.delta?.content;
-            if (content) {
-                fullResponse += content;
-            }
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error?.message || `HTTP ${response.status}`);
         }
+
+        const data = await response.json();
+        const fullResponse = data.choices[0]?.message?.content || "";
 
         if (fullResponse.trim()) {
             await m.reply(fullResponse.trim());
