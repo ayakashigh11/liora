@@ -181,6 +181,49 @@ export async function addExif(webpBuffer, metadata = {}) {
     return await img.save(null);
 }
 
+export async function webpToMp4(buffer) {
+    const proc = Bun.spawn(
+        [
+            "ffmpeg",
+            "-i",
+            "pipe:0",
+            "-vcodec",
+            "libx264",
+            "-pix_fmt",
+            "yuv420p",
+            "-crf",
+            "23",
+            "-preset",
+            "ultrafast",
+            "-vf",
+            "scale=trunc(iw/2)*2:trunc(ih/2)*2",
+            "-f",
+            "mp4",
+            "-movflags",
+            "frag_keyframe+empty_moov",
+            "pipe:1",
+        ],
+        {
+            stdin: "pipe",
+            stdout: "pipe",
+            stderr: "pipe",
+        }
+    );
+
+    proc.stdin.write(buffer);
+    proc.stdin.end();
+
+    const exitCode = await proc.exited;
+
+    if (exitCode !== 0) {
+        const stderr = await new Response(proc.stderr).text();
+        throw new Error(`FFmpeg failed: ${stderr.slice(0, 200)}`);
+    }
+
+    const output = await new Response(proc.stdout).arrayBuffer();
+    return Buffer.from(output);
+}
+
 export async function sticker(buffer, options = {}) {
     if (!Buffer.isBuffer(buffer)) {
         throw new Error("Input must be a Buffer");
