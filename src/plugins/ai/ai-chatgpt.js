@@ -58,7 +58,8 @@ let handler = async (m, { sock, text }) => {
                 { role: "system", content: systemPrompt },
                 { role: "user", content: prompt }
             ],
-            stream: true
+            stream: true,
+            chatGenerationParams: {}
         });
 
         let fullResponse = "";
