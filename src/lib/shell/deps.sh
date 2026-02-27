@@ -12,7 +12,7 @@ detect_distro() {
         ubuntu|debian)
             export PKG_UPDATE="apt-get update -qq"
             export PKG_INSTALL="apt-get install -y -qq"
-            export DEPS="git curl wget ca-certificates unzip ffmpeg"
+            export DEPS="git curl wget ca-certificates unzip ffmpeg libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2 libpango-1.0-0 libpangocairo-1.0-0"
             ;;
         centos|rhel|rocky|alma)
             export PKG_UPDATE="yum check-update || true"

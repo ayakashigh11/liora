@@ -12,8 +12,23 @@ let handler = async (m, { text, sock }) => {
     try {
         await global.loading(m, sock);
         const browser = await puppeteer.launch({
-            args: ["--no-sandbox", "--disable-setuid-sandbox"]
+            args: [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-accelerated-2d-canvas",
+                "--no-first-run",
+                "--no-zygote",
+                "--disable-gpu"
+            ],
+            executablePath: process.env.CHROME_PATH || undefined // Allow override via env
+        }).catch(err => {
+            if (err.message.includes("Could not find Chrome")) {
+                throw new Error("Chrome browser not found. Please run 'bot install' or 'npx puppeteer browsers install chrome' on your VPS.");
+            }
+            throw err;
         });
+
         const page = await browser.newPage();
 
         if (isMobile) {
