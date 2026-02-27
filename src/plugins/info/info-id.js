@@ -18,15 +18,15 @@ let handler = async (m, { sock, args, usedPrefix, command }) => {
                 const code = link.split("/channel/")[1].split("?")[0];
                 const res = await sock.newsletterMetadata("invite", code);
                 id = res.id;
-                name = res.name;
+                name = res.name || res.subject || "Unknown";
             } else if (m.chat.endsWith("@newsletter")) {
                 id = m.chat;
                 const res = await sock.newsletterMetadata("jid", id);
-                name = res.name;
+                name = res.name || res.subject || "Unknown";
             } else {
                 return m.reply(`Usage: ${usedPrefix + command} <channel_link>\nOr use it inside a channel.`);
             }
-            return m.reply(`*CHANNEL INFO*\n\nName: ${name}\nID: ${id}`);
+            return m.reply(`*CHANNEL INFO*\n\n*Name:* ${name}\n*ID:* ${id}`);
         } else {
             // Group ID
             let id, subject;
