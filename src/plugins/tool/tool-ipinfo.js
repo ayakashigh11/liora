@@ -1,21 +1,26 @@
-/**
- * @file IP Info plugin
- * @module plugins/tool/ipinfo
- * @description Get detailed information about an IP address
- * @license Apache-2.0
- */
+import dns from "node:dns";
+const { lookup } = dns.promises;
 
 let handler = async (m, { sock, text, usedPrefix, command }) => {
-    const ip = text.trim() || m.quoted?.text?.trim();
-    if (!ip) {
-        return m.reply(`Please provide an IP address to lookup.\n\nUsage: *${usedPrefix + command} (ip)*\nExample: *${usedPrefix + command} 1.1.1.1*`);
+    let input = text.trim() || m.quoted?.text?.trim();
+    if (!input) {
+        return m.reply(`Please provide an IP address or domain to lookup.\n\nUsage: *${usedPrefix + command} (ip/domain)*\nExample: *${usedPrefix + command} google.com*`);
     }
 
     // Basic IP validation (IPv4 or IPv6)
     const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
 
-    if (!ipRegex.test(ip)) {
-        return m.reply("Invalid IP address format.");
+    let ip = input;
+    let resolvedFrom = null;
+
+    if (!ipRegex.test(input)) {
+        try {
+            const { address } = await lookup(input);
+            ip = address;
+            resolvedFrom = input;
+        } catch (e) {
+            return m.reply(`Invalid IP format and failed to resolve domain: *${input}*`);
+        }
     }
 
     try {
@@ -31,6 +36,7 @@ let handler = async (m, { sock, text, usedPrefix, command }) => {
         const data = await response.json();
 
         let txt = `*🌐 IP INFORMATION*\n\n`;
+        if (resolvedFrom) txt += `*Resolved from:* ${resolvedFrom}\n`;
         txt += `*IP:* ${data.ip}\n`;
         txt += `*RIR:* ${data.rir || "-"}\n`;
         txt += `*Bogon:* ${data.is_bogon ? "Yes" : "No"}\n`;
