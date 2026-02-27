@@ -212,7 +212,12 @@ clone_and_install() {
         error "Failed to install packages"
         exit 1
     }
+
+    info "Installing Puppeteer browsers..."
+    npx puppeteer browsers install chrome || {
+        warn "Failed to install Chrome automatically. You may need to run 'npx puppeteer browsers install chrome' manually."
+    }
     
-    log "Packages installed successfully"
+    log "Packages and browsers installed successfully"
     echo ""
 }

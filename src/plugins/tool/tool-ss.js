@@ -44,8 +44,8 @@ let handler = async (m, { text, sock }) => {
     }
 };
 
-handler.help = ["ss", "screenshot"];
+handler.help = ["ss", "screenshot", "ssweb"];
 handler.tags = ["tool"];
-handler.command = /^(ss|screenshot)$/i;
+handler.command = /^(ss|screenshot|ssweb)$/i;
 
 export default handler;
