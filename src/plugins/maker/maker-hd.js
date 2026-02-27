@@ -44,18 +44,27 @@ let handler = async (m, { sock, usedPrefix, command }) => {
 
         if (!res.ok) throw new Error(`Nexray API error: ${res.statusText}`);
 
-        const d = await res.json();
-        if (!d.status || !d.result) {
-            throw new Error(d.message || "Nexray API returned an unsuccessful status.");
+        const contentType = res.headers.get('content-type') || "";
+        if (contentType.includes('image')) {
+            const buffer = Buffer.from(await res.arrayBuffer());
+            await sock.sendMessage(m.chat, {
+                image: buffer,
+                caption: `*UPSCALE / HD SUCCESS*\n\n> Powered by Liora`
+            }, { quoted: m });
+        } else {
+            const d = await res.json();
+            if (!d.status || !d.result) {
+                throw new Error(d.message || "Nexray API returned an unsuccessful status.");
+            }
+
+            const resultUrl = typeof d.result === 'string' ? d.result : d.result.url || d.result.download_url;
+            if (!resultUrl) throw new Error("Upscaled image URL not found in API response.");
+
+            await sock.sendMessage(m.chat, {
+                image: { url: resultUrl },
+                caption: `*UPSCALE / HD SUCCESS*\n\n> Powered by Liora`
+            }, { quoted: m });
         }
-
-        const resultUrl = typeof d.result === 'string' ? d.result : d.result.url || d.result.download_url;
-        if (!resultUrl) throw new Error("Upscaled image URL not found in API response.");
-
-        await sock.sendMessage(m.chat, {
-            image: { url: resultUrl },
-            caption: `*UPSCALE / HD SUCCESS*\n\n> Powered by Liora`
-        }, { quoted: m });
 
     } catch (e) {
         sock.logger.error(e);
