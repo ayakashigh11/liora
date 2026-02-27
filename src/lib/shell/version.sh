@@ -214,8 +214,8 @@ clone_and_install() {
     }
 
     info "Installing Puppeteer browsers..."
-    npx puppeteer browsers install chrome || {
-        warn "Failed to install Chrome automatically. You may need to run 'npx puppeteer browsers install chrome' manually."
+    "$BUN_PATH" x puppeteer browsers install chrome || {
+        warn "Failed to install Chrome automatically. You may need to run 'bunx puppeteer browsers install chrome' manually."
     }
     
     log "Packages and browsers installed successfully"

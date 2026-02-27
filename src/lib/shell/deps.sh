@@ -59,7 +59,7 @@ install_packages() {
         }
     fi
     
-    log "System packages installed: ${DIM}git, curl, wget, ffmpeg${RESET}"
+    log "System dependencies and required libraries installed successfully."
 }
 
 install_bun() {
