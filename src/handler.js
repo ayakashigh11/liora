@@ -11,6 +11,7 @@ import { smsg } from "#core/smsg.js";
 import { join, dirname } from "node:path";
 import { trackCommand } from "#lib/tracker.js";
 import { getAFK, delAFK } from "#lib/afk.js";
+import { addLog, isBlacklisted } from "#lib/antidelete.js";
 
 const CMD_PREFIX_RE = /^[/!.]/;
 
@@ -137,7 +138,37 @@ export async function handler(chatUpdate) {
         if (!messages || messages.length === 0) return;
 
         const m = smsg(this, messages[messages.length - 1]);
-        if (!m || m.isBaileys) return;
+        if (!m) return;
+
+        // Anti-Delete & Anti-Edit (Silent Logger)
+        if (m.mtype === "protocolMessage" && !isBlacklisted(m.chat)) {
+            const protocol = m.msg;
+            const type = protocol.type; // 0: REVOKE, 14: MESSAGE_EDIT
+            const key = protocol.key;
+
+            if (type === 0 || type === 14) {
+                const chatData = this.getChat(m.chat);
+                const oldMsg = chatData?.messages?.[key.id];
+
+                if (oldMsg) {
+                    const logType = type === 0 ? "delete" : "edit";
+                    let content = oldMsg.text || "";
+                    if (!content && oldMsg.mtype) {
+                        content = `[Media: ${oldMsg.mtype}]`;
+                    }
+
+                    addLog({
+                        chat_id: m.chat,
+                        sender_id: oldMsg.sender,
+                        push_name: oldMsg.pushName || "Unknown",
+                        content: content,
+                        type: logType,
+                    });
+                }
+            }
+        }
+
+        if (m.isBaileys) return;
 
         const senderLid = m.sender ? m.sender.split("@")[0] : "";
         const regOwners = global.config.owner.map((id) => id.toString().split("@")[0]);
