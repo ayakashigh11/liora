@@ -65,8 +65,8 @@ let handler = async (m, { sock, text, usedPrefix, command }) => {
     }
 };
 
-handler.help = ["editimage"];
+handler.help = ["editimage", "editimg"];
 handler.tags = ["maker"];
-handler.command = /^(editimage|ei)$/i;
+handler.command = /^(editimage|editimg)$/i;
 
 export default handler;

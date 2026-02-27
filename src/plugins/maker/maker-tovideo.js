@@ -23,7 +23,7 @@ let handler = async (m, { sock }) => {
     }
 };
 
-handler.help = ["tovideo"];
+handler.help = ["tovideo", "tomp4"];
 handler.tags = ["maker"];
 handler.command = /^(tovideo|tomp4)$/i;
 
