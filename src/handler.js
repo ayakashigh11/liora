@@ -10,6 +10,7 @@
 import { smsg } from "#core/smsg.js";
 import { join, dirname } from "node:path";
 import { trackCommand } from "#lib/tracker.js";
+import { getAFK, delAFK } from "#lib/afk.js";
 
 const CMD_PREFIX_RE = /^[/!.]/;
 
@@ -144,6 +145,27 @@ export async function handler(chatUpdate) {
 
         if (!m.fromMe && global.config.self && !isOwner) {
             return;
+        }
+
+        // Logic AFK: Auto-unafk
+        const senderAfk = getAFK(m.sender);
+        if (senderAfk) {
+            const timeDiff = Math.floor(Date.now() / 1000) - senderAfk.time;
+            const duration = timeDiff > 60 ? `${Math.floor(timeDiff / 60)} menit` : `${timeDiff} detik`;
+            delAFK(m.sender);
+            await this.reply(m.chat, `👋 *Selamat Datang Kembali!*\n\nStatus AFK Anda telah dihapus.\nDurasi: ${duration}\nAlasan: ${senderAfk.reason}`, m);
+        }
+
+        // Logic AFK: Mention detection
+        if (m.mentionedJid && m.mentionedJid.length > 0) {
+            for (const jid of m.mentionedJid) {
+                const targetAfk = getAFK(jid);
+                if (targetAfk) {
+                    const timeDiff = Math.floor(Date.now() / 1000) - targetAfk.time;
+                    const duration = timeDiff > 60 ? `${Math.floor(timeDiff / 60)} menit` : `${timeDiff} detik`;
+                    await this.reply(m.chat, `🤫 *Ssstt!* @${jid.split("@")[0]} sedang AFK.\n\nAlasan: ${targetAfk.reason}\nSuda AFK sejak ${duration} yang lalu.`, m, { mentions: [jid] });
+                }
+            }
         }
 
         let groupMetadata = {};
