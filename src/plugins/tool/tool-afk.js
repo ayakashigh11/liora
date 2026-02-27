@@ -7,13 +7,13 @@
 import { setAFK } from "#lib/afk.js";
 
 let handler = async (m, { text }) => {
-    const reason = text || (m.quoted && m.quoted.text) || "Tanpa alasan";
+    const reason = text || (m.quoted && m.quoted.text) || "No reason";
     const success = setAFK(m.sender, reason);
 
     if (success) {
-        await m.reply(`✅ *Status AFK Aktif*\n\nAlasan: ${reason}\n\nLiora akan memberitahu jika ada yang tag Anda.`);
+        await m.reply(`✅ *AFK Mode Active*\n\nReason: ${reason}\n\nLiora will notify you if anyone tags you.`);
     } else {
-        await m.reply("❌ Gagal menetapkan status AFK.");
+        await m.reply("❌ Failed to set AFK status.");
     }
 };
 

@@ -151,9 +151,9 @@ export async function handler(chatUpdate) {
         const senderAfk = getAFK(m.sender);
         if (senderAfk) {
             const timeDiff = Math.floor(Date.now() / 1000) - senderAfk.time;
-            const duration = timeDiff > 60 ? `${Math.floor(timeDiff / 60)} menit` : `${timeDiff} detik`;
+            const duration = timeDiff > 60 ? `${Math.floor(timeDiff / 60)} minutes` : `${timeDiff} seconds`;
             delAFK(m.sender);
-            await this.reply(m.chat, `👋 *Selamat Datang Kembali!*\n\nStatus AFK Anda telah dihapus.\nDurasi: ${duration}\nAlasan: ${senderAfk.reason}`, m);
+            await this.reply(m.chat, `👋 *Welcome Back!*\n\nYour AFK status has been cleared.\nDuration: ${duration}\nReason: ${senderAfk.reason}`, m);
         }
 
         // Logic AFK: Mention detection
@@ -162,8 +162,8 @@ export async function handler(chatUpdate) {
                 const targetAfk = getAFK(jid);
                 if (targetAfk) {
                     const timeDiff = Math.floor(Date.now() / 1000) - targetAfk.time;
-                    const duration = timeDiff > 60 ? `${Math.floor(timeDiff / 60)} menit` : `${timeDiff} detik`;
-                    await this.reply(m.chat, `🤫 *Ssstt!* @${jid.split("@")[0]} sedang AFK.\n\nAlasan: ${targetAfk.reason}\nSuda AFK sejak ${duration} yang lalu.`, m, { mentions: [jid] });
+                    const duration = timeDiff > 60 ? `${Math.floor(timeDiff / 60)} minutes` : `${timeDiff} seconds`;
+                    await this.reply(m.chat, `🤫 *Sshhh!* @${jid.split("@")[0]} is currently AFK.\n\nReason: ${targetAfk.reason}\nHas been AFK for ${duration}.`, m, { mentions: [jid] });
                 }
             }
         }

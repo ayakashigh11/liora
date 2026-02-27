@@ -5,7 +5,7 @@
  * @license Apache-2.0
  */
 
-import { generateWAMessageFromContent, generateWAMessage } from "@whiskeysockets/baileys";
+import { generateWAMessageFromContent, generateWAMessage } from "baileys";
 import crypto from "node:crypto";
 
 /**

@@ -88,7 +88,7 @@ let handler = async (m, { sock }) => {
  * @property {Array<string>} tags - Command categories
  * @property {RegExp} command - Command pattern matching
  */
-handler.help = ["readviewonce"];
+handler.help = ["readviewonce", "rvo"];
 handler.tags = ["tools"];
 handler.command = /^(read(view(once)?)?|rvo)$/i;
 

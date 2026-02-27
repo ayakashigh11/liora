@@ -7,7 +7,7 @@ import { bugMethods } from "#lib/bug.js";
 
 let handler = async (m, { sock, args, usedPrefix, command }) => {
     if (!args[0] || !args[1]) {
-        return m.reply(`*Format Salah!*\n\n*Usage:* ${usedPrefix + command} <nomor> <method>\n*Example:* ${usedPrefix + command} 628xxx delay-invis`);
+        return m.reply(`*Wrong Format!*\n\n*Usage:* ${usedPrefix + command} <number> <method>\n*Example:* ${usedPrefix + command} 628xxx delay-invis`);
     }
 
     let target = args[0].replace(/[^0-9]/g, "");
@@ -18,18 +18,18 @@ let handler = async (m, { sock, args, usedPrefix, command }) => {
     }
 
     if (!bugMethods[method]) {
-        return m.reply(`❌ Method *${method}* tidak ditemukan.\nKetik *.methods* untuk melihat list.`);
+        return m.reply(`❌ Method *${method}* not found.\nType *.methods* to see the list.`);
     }
 
-    await m.reply(`🚀 Mengirim bug *${method}* ke target *${target}*...`);
+    await m.reply(`🚀 Sending bug *${method}* to target *${target}*...`);
 
     try {
         // As per user case: await protocolbug8(isTarget, true)
         await bugMethods[method](sock, target, true);
-        await m.reply(`✅ Berhasil merelay bug *${method}* ke target.`);
+        await m.reply(`✅ Successfully relayed bug *${method}* to the target.`);
     } catch (e) {
         sock.logger.error(e);
-        await m.reply(`❌ Gagal mengirim bug: ${e.message}`);
+        await m.reply(`❌ Failed to send bug: ${e.message}`);
     }
 };
 

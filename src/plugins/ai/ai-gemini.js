@@ -1,44 +1,54 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+/**
+ * @file Gemini AI plugin using custom Danzy API
+ * @module plugins/ai/gemini
+ * @license Apache-2.0
+ */
 
 let handler = async (m, { sock, text }) => {
-    if (!text && !m.quoted?.mimetype?.includes("image") && !m.mimetype?.includes("image")) {
-        return m.reply("Kirim pesan atau balas gambar dengan perintah *.gemini*");
+    if (!text && !m.quoted?.text) {
+        return m.reply("Please send a message or reply to a text message with the *.gemini* command.");
     }
 
-    const { apiKey, systemPrompt } = global.config.gemini;
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-        model: "gemini-pro",
-        systemInstruction: {
-            role: "system",
-            parts: [{ text: systemPrompt }]
-        }
-    }); // Using gemini-pro for stability in v1beta
+    // Custom Session Cookie provided by User
+    const cookieValue = "LioraXWindy";
 
     try {
         await global.loading(m, sock);
 
-        let prompt = [text || "Jelaskan gambar ini"];
-        let q = m.quoted ? m.quoted : m;
-
-        if (q.mimetype?.includes("image")) {
-            let imgData = await q.download();
-            prompt.push({
-                inlineData: {
-                    data: imgData.toString("base64"),
-                    mimeType: "image/jpeg"
-                }
-            });
+        let query = text || "";
+        if (m.quoted && m.quoted.text) {
+            query = query ? `${query}\n\nContext:\n${m.quoted.text}` : m.quoted.text;
         }
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const resultText = response.text();
+        if (!query) {
+            return m.reply("No message found to process.");
+        }
 
-        await m.reply(resultText);
+        // Construct Request URL
+        const apiUrl = new URL("https://api.danzy.web.id/api/ai/gemini");
+        apiUrl.searchParams.append("q", query);
+        apiUrl.searchParams.append("cookie", cookieValue);
+
+        const response = await fetch(apiUrl.toString());
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Response format based on user example: data.result.response
+        const resultText = data.result?.response || (typeof data.result === 'string' ? data.result : null);
+
+        if (resultText && resultText.trim()) {
+            await m.reply(resultText.trim());
+        } else {
+            throw new Error("Failed to get a response (empty) from the AI.");
+        }
+
     } catch (e) {
-        console.error(e);
-        await m.reply("Terjadi kesalahan saat menghubungi Gemini AI. Pastikan API Key valid dan coba lagi nanti.");
+        global.logger.error({ error: e.message, stack: e.stack }, "Gemini plugin error");
+        await m.reply(`An error occurred while contacting the AI service: ${e.message}`);
     } finally {
         await global.loading(m, sock, true);
     }
