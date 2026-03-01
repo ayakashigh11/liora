@@ -62,6 +62,42 @@ install_packages() {
     log "System dependencies and required libraries installed successfully."
 }
 
+install_node() {
+    info "Checking Node.js version..."
+    
+    local node_ver=$(node -v 2>/dev/null | sed 's/v//' | cut -d. -f1 || echo "0")
+    
+    if [ "$node_ver" -ge 18 ]; then
+        log "Node.js is already up to date: ${CYAN}v$(node -v)${RESET}"
+        return 0
+    fi
+
+    info "Node.js is missing or outdated ($node_ver). Installing Node.js 20 LTS..."
+    
+    case "$OS_ID" in
+        ubuntu|debian)
+            curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+            apt-get install -y nodejs
+            ;;
+        centos|rhel|rocky|alma)
+            curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
+            yum install -y nodejs
+            ;;
+        fedora)
+            curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
+            dnf install -y nodejs
+            ;;
+        *)
+            warn "Automatic Node.js installation not supported for ${YELLOW}${OS_ID}${RESET}. Please install Node.js >= 18 manually."
+            ;;
+    esac
+
+    if ! command -v node &> /dev/null; then
+        error "Node.js installation failed."
+        exit 1
+    fi
+}
+
 install_bun() {
     info "Checking Bun runtime..."
     echo -e "${GRAY}────────────────────────────────────────────────────────────────────────────${RESET}"
@@ -103,6 +139,8 @@ install_dependencies() {
     echo ""
 
     detect_distro
+    echo ""
+    install_node
     echo ""
     install_packages
     echo ""
