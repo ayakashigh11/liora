@@ -65,7 +65,7 @@ let handler = async (m, { sock, args, usedPrefix, command }) => {
         });
 
         if (stiker) {
-            await sock.sendMessage(m.chat, { sticker: stiker }, { quoted: m.quoted || m });
+            await sock.sendMessage(m.chat, { sticker: stiker }, { quoted: m.quoted ? m.quoted.vM : m });
         } else {
             throw new Error("Sticker conversion failed");
         }
