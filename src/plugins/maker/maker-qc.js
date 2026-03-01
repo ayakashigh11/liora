@@ -41,8 +41,8 @@ let handler = async (m, { sock, args, usedPrefix, command }) => {
     if (global.loading) await global.loading(m, sock);
 
     try {
+        const name = (m.quoted ? m.quoted.name : m.name) || "User";
         const targetJid = m.quoted ? m.quoted.sender : m.sender;
-        const name = (m.quoted ? m.quoted.pushName : m.pushName) || (await sock.getName(targetJid)) || "User";
         let avatar;
 
         try {
