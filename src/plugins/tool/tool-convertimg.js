@@ -52,6 +52,8 @@ let handler = async (m, { sock, args, usedPrefix, command }) => {
         const fileName = `converted_${Date.now()}.${targetFormat === 'jpeg' ? 'jpg' : targetFormat}`;
         const mimeType = `image/${targetFormat}`;
 
+        const fromFormat = (mediaType.split('/')[1] || "IMG").toUpperCase();
+
         // Send as image or document depending on format/use case
         // Some formats like TIFF/AVIF might be better as documents in WA
         const isDocument = ["tiff", "avif", "heif"].includes(targetFormat);
@@ -61,12 +63,12 @@ let handler = async (m, { sock, args, usedPrefix, command }) => {
                 document: outputBuffer,
                 mimetype: mimeType,
                 fileName: fileName,
-                caption: `*✅ CONVERSION COMPLETED*\n\n📤 *From:* ${mediaType.split('/')[1].toUpperCase()}\n📥 *To:* ${target.toUpperCase()}\n\n> Powered by Liora`
+                caption: `*✅ CONVERSION COMPLETED*\n\n📤 *From:* ${fromFormat}\n📥 *To:* ${target.toUpperCase()}\n\n> Powered by Liora`
             }, { quoted: m });
         } else {
             await sock.sendMessage(m.chat, {
                 image: outputBuffer,
-                caption: `*✅ CONVERSION COMPLETED*\n\n📤 *From:* ${mediaType.split('/')[1].toUpperCase()}\n📥 *To:* ${target.toUpperCase()}\n\n> Powered by Liora`
+                caption: `*✅ CONVERSION COMPLETED*\n\n📤 *From:* ${fromFormat}\n📥 *To:* ${target.toUpperCase()}\n\n> Powered by Liora`
             }, { quoted: m });
         }
 

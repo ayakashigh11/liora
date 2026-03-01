@@ -21,7 +21,7 @@ function formatBytes(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-let handler = async (m, { sock, downloadM, usedPrefix, command }) => {
+let handler = async (m, { sock, usedPrefix, command }) => {
     const q = m.quoted ? m.quoted : m;
     const mime = (q.msg || q).mimetype || '';
 
@@ -35,7 +35,7 @@ let handler = async (m, { sock, downloadM, usedPrefix, command }) => {
         const fileSize = (q.msg || q).fileLength ? parseInt((q.msg || q).fileLength.toString()) : 0;
 
         // Download the file
-        const buffer = await downloadM(q);
+        const buffer = await q.download?.();
         if (!buffer || buffer.length === 0) {
             throw new Error("Failed to download or empty file.");
         }
