@@ -12,28 +12,31 @@ detect_distro() {
         ubuntu|debian)
             export PKG_UPDATE="apt-get update -qq"
             export PKG_INSTALL="apt-get install -y -qq"
+            # Full list of Puppeteer dependencies for Debian/Ubuntu
             export DEPS="git curl wget ca-certificates unzip ffmpeg libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2 libpango-1.0-0 libpangocairo-1.0-0"
             ;;
         centos|rhel|rocky|alma)
             export PKG_UPDATE="yum check-update || true"
             export PKG_INSTALL="yum install -y -q"
-            export DEPS="git curl wget ca-certificates unzip ffmpeg"
+            export DEPS="git curl wget ca-certificates unzip ffmpeg alsa-lib at-spi2-atk atk cups-libs libdrm libXcomposite libXdamage libXrandr mesa-libgbm pango cairo-gobject-devel"
             ;;
         fedora)
             export PKG_UPDATE="dnf check-update || true"
             export PKG_INSTALL="dnf install -y -q"
-            export DEPS="git curl wget ca-certificates unzip ffmpeg"
+            export DEPS="git curl wget ca-certificates unzip ffmpeg alsa-lib at-spi2-atk atk cups-libs libdrm libXcomposite libXdamage libXrandr mesa-libgbm pango cairo-gobject-devel"
+            ;;
+        alpine)
+            export PKG_UPDATE="apk update"
+            export PKG_INSTALL="apk add"
+            export DEPS="git curl wget ca-certificates unzip ffmpeg chromium nss freetype harfbuzz ttf-freefont"
+            ;;
+        arch)
+            export PKG_UPDATE="pacman -Sy"
+            export PKG_INSTALL="pacman -S --noconfirm"
+            export DEPS="git curl wget ca-certificates unzip ffmpeg nss atk at-spi2-atk cups libdrm libxkbcommon libxcomposite libxdamage libxrandr gbm alsa-lib pango cairo"
             ;;
         *)
             warn "Unsupported distribution: ${YELLOW}${OS_ID}${RESET}"
-            echo -e "${GRAY}────────────────────────────────────────────────────────────────────────────${RESET}"
-            echo -e "${WHITE}Only Ubuntu, Debian, CentOS, RHEL, Rocky, AlmaLinux, and Fedora are${RESET}"
-            echo -e "${WHITE}officially supported. Installation may not work correctly.${RESET}"
-            echo -e "${GRAY}────────────────────────────────────────────────────────────────────────────${RESET}"
-            echo ""
-            echo -n "Continue anyway? [y/N]: "
-            read -r reply < /dev/tty
-            [[ ! $reply =~ ^[Yy]$ ]] && exit 1
             export PKG_UPDATE="true"
             export PKG_INSTALL="echo"
             export DEPS=""
@@ -47,10 +50,7 @@ install_packages() {
     info "Installing system packages..."
     echo -e "${GRAY}────────────────────────────────────────────────────────────────────────────${RESET}"
     
-    $PKG_UPDATE || {
-        error "Failed to update package lists"
-        exit 1
-    }
+    $PKG_UPDATE || true
     
     if [ -n "$DEPS" ]; then
         $PKG_INSTALL $DEPS || {
@@ -67,28 +67,37 @@ install_node() {
     
     local node_ver=$(node -v 2>/dev/null | sed 's/v//' | cut -d. -f1 || echo "0")
     
+    # Puppeteer requires Node >= 18
     if [ "$node_ver" -ge 18 ]; then
         log "Node.js is already up to date: ${CYAN}v$(node -v)${RESET}"
         return 0
     fi
 
-    info "Node.js is missing or outdated ($node_ver). Installing Node.js 20 LTS..."
+    info "Node.js is missing or outdated ($node_ver). Installing Node.js LTS..."
     
     case "$OS_ID" in
         ubuntu|debian)
-            curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+            # Use Node 20 for newer releases, 18 for older ones if needed
+            local setup_ver="20.x"
+            # Example: Ubuntu 18.04 might prefer 18.x
+            [[ "$OS_VERSION" == "18.04" ]] && setup_ver="18.x"
+            
+            curl -fsSL https://deb.nodesource.com/setup_$setup_ver | bash -
             apt-get install -y nodejs
             ;;
-        centos|rhel|rocky|alma)
-            curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
-            yum install -y nodejs
+        centos|rhel|rocky|alma|fedora)
+            local setup_ver="20.x"
+            curl -fsSL https://rpm.nodesource.com/setup_$setup_ver | bash -
+            ${PKG_INSTALL% *} install -y nodejs
             ;;
-        fedora)
-            curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
-            dnf install -y nodejs
+        alpine)
+            apk add nodejs npm
+            ;;
+        arch)
+            pacman -S --noconfirm nodejs npm
             ;;
         *)
-            warn "Automatic Node.js installation not supported for ${YELLOW}${OS_ID}${RESET}. Please install Node.js >= 18 manually."
+            warn "Manual Node.js installation required for ${YELLOW}${OS_ID}${RESET}."
             ;;
     esac
 
@@ -96,6 +105,7 @@ install_node() {
         error "Node.js installation failed."
         exit 1
     fi
+    log "Node.js ready: ${CYAN}v$(node -v)${RESET}"
 }
 
 install_bun() {
