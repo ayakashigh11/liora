@@ -1,3 +1,11 @@
+/**
+ * @file Advanced Screenshot Plugin
+ * @module plugins/tool/ss
+ * @description Capture website screenshots with stealth and multi-device support
+ * @license Apache-2.0
+ * @author ayakashigh11 (adapted from user provided logic)
+ */
+
 import puppeteer from "puppeteer";
 
 /** @type {import('puppeteer').Browser | null} */
@@ -6,7 +14,6 @@ let browserPromise = null;
 
 /**
  * Initialize or return a cached browser instance with race-condition protection
- * @returns {Promise<import('puppeteer').Browser>}
  */
 async function getBrowser() {
     if (cachedBrowser && cachedBrowser.connected) {
@@ -37,15 +44,13 @@ async function getBrowser() {
                     "--metrics-recording-only",
                     "--mute-audio",
                     "--no-default-browser-check",
-                    "--single-process", // Try to run in a single process if supported (Linux)
-                    "--disable-setuid-sandbox",
-                    "--no-first-run",
-                    "--disable-dev-shm-usage",
-                    "--disable-software-rasterizer",
+                    "--disable-web-security",
                     "--disable-features=IsolateOrigins,site-per-process",
-                    "--disable-ipc-flooding-protection"
+                    "--disable-blink-features=AutomationControlled",
+                    "--window-size=1920,1080",
+                    "--lang=en-US,en"
                 ],
-                executable_path: process.env.CHROME_PATH || undefined
+                executablePath: process.env.CHROME_PATH || undefined
             });
 
             cachedBrowser = browser;
@@ -64,20 +69,36 @@ async function getBrowser() {
     return browserPromise;
 }
 
-let handler = async (m, { text, sock, usedPrefix, command }) => {
-    if (!text) return m.reply(`Usage: *${usedPrefix + command} <url> [options]*\nOptions: mobile, full`);
+const userAgents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0'
+];
 
-    let url = text.match(/https?:\/\/\S+/i)?.[0];
-    if (!url) {
-        if (!/^https?:\/\//i.test(text)) {
-            url = "https://" + text.split(" ")[0];
-        } else {
-            return m.reply("❌ Please provide a valid URL.");
-        }
+let handler = async (m, { text, sock, usedPrefix, command }) => {
+    if (!text) return m.reply(`Usage: *${usedPrefix + command} {url} [mode] [fullscreen]*\n\n• *mode:* desktop/mobile (default: desktop)\n• *fullscreen:* true/false (default: true)`);
+
+    const args = text.split(" ");
+    let url = args[0];
+    if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+
+    const mode = (args[1] || 'desktop').toLowerCase();
+    const fullscreen = args[2] !== undefined ? args[2].toLowerCase() === 'true' : true;
+
+    // Validate URL
+    try {
+        new URL(url);
+    } catch (e) {
+        return m.reply("❌ Invalid URL format! Example: https://google.com");
     }
 
-    let isMobile = text.toLowerCase().includes("mobile");
-    let isFull = text.toLowerCase().includes("full");
+    if (!['desktop', 'mobile'].includes(mode)) {
+        return m.reply("❌ Invalid mode! Use *desktop* or *mobile*.");
+    }
 
     let page = null;
     try {
@@ -86,74 +107,84 @@ let handler = async (m, { text, sock, usedPrefix, command }) => {
         const browser = await getBrowser();
         page = await browser.newPage();
 
-        // Set timeouts to prevent infinite hanging
-        page.setDefaultNavigationTimeout(20000);
-        page.setDefaultTimeout(25000);
+        // Advanced Anti-Detection Scripts (Always On)
+        await page.evaluateOnNewDocument(() => {
+            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+            Object.defineProperty(navigator, 'plugins', {
+                get: () => [
+                    { name: 'Chrome PDF Plugin', filename: 'internal-pdf-viewer', description: 'Portable Document Format' },
+                    { name: 'Chrome PDF Viewer', filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai', description: '' },
+                    { name: 'Native Client', filename: 'internal-nacl-plugin', description: '' }
+                ]
+            });
+            Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en', 'id'] });
+            Object.defineProperty(navigator, 'platform', { get: () => 'Win32' });
+            window.chrome = { runtime: {}, loadTimes: () => { }, csi: () => { }, app: {} };
+        });
 
-        // Speed optimization: Intercept junk requests
+        // Stealth Headers
+        await page.setExtraHTTPHeaders({
+            'Accept-Language': 'en-US,en;q=0.9,id;q=0.8',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none'
+        });
+
+        // Speed: Intercept and block ads/fonts
         await page.setRequestInterception(true);
         page.on('request', (request) => {
-            try {
-                if (request.isInterceptResolutionHandled()) return;
-
-                const url = request.url();
-                const type = request.resourceType();
-
-                // Block ads, trackers, analytics, and heavy fonts
-                const blockedRegex = /ads|analytics|tracker|doubleclick|pixel|facebook|google-analytics|min.js.map/i;
-                // Unconditionally block fonts and media for speed
-                const blockedTypes = ['font', 'media', 'other'];
-
-                if (blockedRegex.test(url) || blockedTypes.includes(type)) {
-                    request.abort().catch(() => { });
-                } else {
-                    request.continue().catch(() => { });
-                }
-            } catch (e) {
+            const type = request.resourceType();
+            const u = request.url();
+            if (['font', 'media'].includes(type) || /ads|analytics|tracker/i.test(u)) {
+                request.abort().catch(() => { });
+            } else {
                 request.continue().catch(() => { });
             }
         });
 
-        if (isMobile) {
-            await page.setUserAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1");
-            await page.setViewport({ width: 375, height: 812, isMobile: true });
+        const randomUA = userAgents[Math.floor(Math.random() * userAgents.length)];
+        await page.setUserAgent(randomUA);
+
+        if (mode === 'mobile') {
+            await page.setViewport({ width: 375, height: 667, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
         } else {
-            await page.setViewport({ width: 1440, height: 900 });
+            await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
         }
 
-        // Optimization: Use 'load' for speed, fallback to 'domcontentloaded' if it hangs
-        await page.goto(url, {
-            waitUntil: "load",
-            timeout: 20000
-        }).catch(async () => {
-            // Fallback if 'load' is too slow
-            return page.goto(url, { waitUntil: "domcontentloaded", timeout: 10000 }).catch(() => { });
-        });
+        await page.goto(url, { waitUntil: 'load', timeout: 60000 }).catch(() =>
+            page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => { })
+        );
 
-        // Minimum wait for stability
-        await new Promise(r => setTimeout(r, 1500));
+        // stabilization wait
+        await new Promise(r => setTimeout(r, 2000));
 
-        const screenshot = await page.screenshot({
-            fullPage: isFull,
-            type: "png"
-        });
+        const screenshotOptions = {
+            type: 'png',
+            fullPage: fullscreen
+        };
 
-        if (!screenshot || screenshot.length === 0) {
-            throw new Error("Failed to capture screenshot: result is empty.");
-        }
+        const screenshotBuffer = await page.screenshot(screenshotOptions);
 
-        // Important: Close page BEFORE sending message to free memory early
         await page.close();
         page = null;
 
+        const caption = `📸 *WEB SCREENSHOT*\n\n` +
+            `• *URL:* ${url}\n` +
+            `• *Mode:* ${mode.toUpperCase()}\n` +
+            `• *Full:* ${fullscreen ? 'Yes' : 'No'}\n` +
+            `• *Stealth:* Active\n` +
+            `──────────────────────────\n\n` +
+            `> Powered by Liora Turbo`;
+
         await sock.sendMessage(m.chat, {
-            image: screenshot,
-            caption: `🌐 *SCREENSHOT COMPLETED*\n\n• *URL:* ${url}\n• *Device:* ${isMobile ? '📱 Mobile' : '💻 Desktop'}\n• *Quality:* HD (PNG)\n\n_Generated by Liora Turbo_`
+            image: screenshotBuffer,
+            caption: caption
         }, { quoted: m });
 
     } catch (e) {
-        console.error("Screenshot Error:", e);
-        m.reply(`❌ *Failed to take screenshot:* ${e.message}`);
+        console.error("SS Error:", e);
+        m.reply(`❌ *SS Error:* ${e.message}`);
     } finally {
         if (page) await page.close().catch(() => { });
         await global.loading?.(m, sock, true);
@@ -163,5 +194,9 @@ let handler = async (m, { text, sock, usedPrefix, command }) => {
 handler.help = ["ss", "screenshot", "ssweb"];
 handler.tags = ["tools"];
 handler.command = /^(ss|screenshot|ssweb)$/i;
+
+handler.settings = {
+    loading: true
+};
 
 export default handler;
