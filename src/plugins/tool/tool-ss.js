@@ -178,7 +178,7 @@ let handler = async (m, { text, sock, usedPrefix, command }) => {
             `> Powered by Liora Turbo`;
 
         await sock.sendMessage(m.chat, {
-            image: screenshotBuffer,
+            image: Buffer.from(screenshotBuffer),
             caption: caption
         }, { quoted: m });
 
