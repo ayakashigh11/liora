@@ -28,7 +28,7 @@ let handler = async (m, { sock, text, usedPrefix, command }) => {
                 endpoint = "brat";
         }
 
-        const url = `https://api.nexray.web.id/maker/${endpoint}?text=${encodeURIComponent(text)}`;
+        const url = `https://api-faa.my.id/faa/${endpoint}?text=${encodeURIComponent(text)}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error(`API returned ${res.status}`);
 
