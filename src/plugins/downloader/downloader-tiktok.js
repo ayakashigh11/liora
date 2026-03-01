@@ -115,7 +115,7 @@ let handler = async (m, { sock, text, usedPrefix, command }) => {
     }
 };
 
-handler.help = ["tt", "tiktok"];
+handler.help = ["tiktok"];
 handler.tags = ["downloader"];
 handler.command = /^(tt|tiktok)$/i;
 

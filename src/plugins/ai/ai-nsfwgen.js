@@ -58,6 +58,6 @@ let handler = async (m, { sock, text, usedPrefix, command }) => {
 
 handler.help = ["nsfwgen"];
 handler.tags = ["ai"];
-handler.command = /^(nsfwgen|nsfwai)$/i;
+handler.command = /^(nsfwgen|nsfwai|gennsfw)$/i;
 
 export default handler;

@@ -168,8 +168,8 @@ let handler = async (m, { sock, args, usedPrefix, command }) => {
     }
 };
 
-handler.help = ["play"];
+handler.help = ["ytplay"];
 handler.tags = ["downloader"];
-handler.command = /^(play|p)$/i;
+handler.command = /^(play|p|ytplay)$/i;
 
 export default handler;

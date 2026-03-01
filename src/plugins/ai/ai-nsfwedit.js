@@ -65,7 +65,7 @@ let handler = async (m, { sock, text, usedPrefix, command }) => {
     }
 };
 
-handler.help = ["nsfwedit", "editnsfw"];
+handler.help = ["nsfwedit"];
 handler.tags = ["ai"];
 handler.command = /^(nsfwedit|editnsfw)$/i;
 

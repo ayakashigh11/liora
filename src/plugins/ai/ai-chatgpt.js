@@ -73,6 +73,6 @@ let handler = async (m, { sock, text }) => {
 
 handler.help = ["chatgpt"];
 handler.tags = ["ai"];
-handler.command = /^(chatgpt|gpt)$/i;
+handler.command = /^(chatgpt|gpt|cgpt)$/i;
 
 export default handler;

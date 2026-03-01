@@ -58,7 +58,7 @@ let handler = async (m, { sock, text, usedPrefix, command }) => {
     }
 };
 
-handler.help = ["git", "gitclone"];
+handler.help = ["git"];
 handler.tags = ["downloader"];
 handler.command = /^(git|gitclone)$/i;
 

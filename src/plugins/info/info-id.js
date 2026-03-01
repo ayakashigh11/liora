@@ -52,6 +52,7 @@ let handler = async (m, { sock, args, usedPrefix, command }) => {
                     name: "cta_copy",
                     buttonParamsJson: JSON.stringify({
                         display_text: "Copy ID",
+                        id: id,
                         copy_code: id,
                     }),
                 },
@@ -94,6 +95,7 @@ let handler = async (m, { sock, args, usedPrefix, command }) => {
                     name: "cta_copy",
                     buttonParamsJson: JSON.stringify({
                         display_text: "Copy ID",
+                        id: id,
                         copy_code: id,
                     }),
                 },
