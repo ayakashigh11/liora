@@ -42,7 +42,18 @@ let handler = async (m, { sock, args, usedPrefix, command }) => {
 
     try {
         const targetJid = m.quoted ? m.quoted.sender : m.sender;
-        const name = (m.quoted ? m.quoted.pushName : m.pushName) || (await sock.getName(targetJid)) || "User";
+        let name = await (m.quoted ? m.quoted.name : m.name);
+
+        // Fallback to pushName if it's still a JID or empty
+        if (!name || /@/.test(name)) {
+            name = (m.quoted ? null : m.pushName) || name || "User";
+        }
+
+        // Clean JID if it still persists
+        if (name && /@/.test(name)) {
+            name = name.split('@')[0];
+        }
+
         let avatar;
 
         try {
